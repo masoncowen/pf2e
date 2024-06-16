@@ -70,7 +70,7 @@ def printHelp(context: Context, args: Arguments) -> Context:
 
 def addTodo(context: Context, args: Arguments) -> None:
   todo = " ".join(args)
-  with open('todolist.md', 'a') as todo_list:
+  with open('../todolist.md', 'a') as todo_list:
     todo_list.write('- [ ] {}'.format(todo))
   log.info("Added '{}' to todo list.".format(todo))
   return context
