@@ -98,7 +98,7 @@ class Commands(Enum):
                  description = "appends note to todo list.",
                  function = addTodo)
   QUIT = Command(text = 'QUIT',
-                 description = "ignores any argumments, quits repl.",
+                 description = "ignores any argumments, quits program.",
                  function = quitSession)
   ECHO = Command(text = 'ECHO',
                  description = "echoes arguments.",
