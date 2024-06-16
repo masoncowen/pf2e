@@ -6,6 +6,8 @@ from typing import *
 
 from stackoverflow_logging import log
 
+type Arguments = Sequence[str]
+
 class States(Enum):
   Exploration = auto()
   Break = auto()
@@ -37,7 +39,7 @@ class Context(pydantic.BaseModel):
 class Command(pydantic.BaseModel):
   text: str
   description: str
-  function: Callable[[Context, tuple[str]], Context]
+  function: Callable[[Context, Arguments], Context]
   allowed_states: Optional[Tuple[States]] = None
   blocked_states: Optional[Tuple[States]] = None
 
@@ -52,11 +54,11 @@ class Command(pydantic.BaseModel):
         return False
     return True
 
-  def write_generic_history(self: Self, args: tuple[str]) -> None:
+  def write_generic_history(self: Self, args: Arguments) -> None:
     hist_line = "> Ran '{}' with {}.".format(self.text.lower(), args)
     log.history(hist_line)
 
-def printHelp(context: Context, args: tuple[str]) -> Context:
+def printHelp(context: Context, args: Arguments) -> Context:
   if args == [] or args[0].upper() == Commands.HELP.value.text:
     log.info("Following commands:")
     for command_container in Commands:
@@ -66,22 +68,22 @@ def printHelp(context: Context, args: tuple[str]) -> Context:
     log.info("Specific help is not yet supported.")
   return context
 
-def addTodo(context: Context, args: tuple[str]) -> None:
+def addTodo(context: Context, args: Arguments) -> None:
   todo = " ".join(args)
   with open('todolist.md', 'a') as todo_list:
     todo_list.write('- [ ] {}'.format(todo))
   log.info("Added '{}' to todo list.".format(todo))
   return context
 
-def quitSession(context: Context, args: tuple[str]) -> Context:
+def quitSession(context: Context, args: Arguments) -> Context:
   quit()
   return context
 
-def echoArguments(context: Context, args: tuple[str]) -> Context:
+def echoArguments(context: Context, args: Arguments) -> Context:
   log.info(args)
   return context
 
-def controlBreak(context: Context, args: tuple[str]) -> Context:
+def controlBreak(context: Context, args: Arguments) -> Context:
   if len(args) == 0:
     log.warning("Command must be followed by either 'start' or 'stop'")
     return context
@@ -101,15 +103,15 @@ def controlBreak(context: Context, args: tuple[str]) -> Context:
       log.warning("Command must be followed by either 'start' or 'stop'")
       return context
 
-def beginCombat(context: Context, args: tuple[str]) -> Context:
+def beginCombat(context: Context, args: Arguments) -> Context:
   log.info("Feature not yet implemented")
   return context
 
-def saveContext(context: Context, args: tuple[str]) -> Context:
+def saveContext(context: Context, args: Arguments) -> Context:
   log.info("Feature not yet implemented")
   return context
 
-def loadContext(context: Context, args: tuple[str]) -> Context:
+def loadContext(context: Context, args: Arguments) -> Context:
   log.info("Feature not yet implemented")
   return context
 
@@ -144,7 +146,7 @@ def start_session() -> Context:
   log.info("New session started")
   return Context(state = States.Exploration)
 
-def get_command(context: Context) -> tuple[Optional[Command], tuple[str]]:
+def get_command(context: Context) -> tuple[Optional[Command], Arguments]:
   command_str: str = input(context.command_prompt())
   command_text: str = command_str.split(' ')[0]
   args: tuple[str] = command_str.split(' ')[1:]
