@@ -106,7 +106,7 @@ class Commands(Enum):
   BREAK = Command(text = 'BREAK',
                   description = "desginates start or end of a break, must be followed by 'start' or 'stop'",
                   function = controlBreak)
-  COMBAT = Command(text = 'COMMAND',
+  COMBAT = Command(text = 'COMBAT',
                    description = "begins a combat encounter.",
                    function = beginCombat,
                    blocked_states = (States.Break,))
