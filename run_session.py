@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import pydantic
 
 from enum import Enum, auto
@@ -27,7 +28,7 @@ class Context(pydantic.BaseModel):
       case States.Exploration:
         return '?: '
       case States.Break:
-        return 'PAUSED: '
+        return 'PAUSED: '    
       case States.Combat:
         return '!{} {}/{}: '.format(self.character.name,
                                     self.character.actions_remaining,
@@ -116,7 +117,7 @@ def start_session() -> Context:
   return Context(state = States.Exploration)
 
 def write_generic_command_history(command: Command, args: tuple[str]) -> None:
-  hist_line = "> Ran '{}' with {}.".format(command.text.lower(), args)
+  hist_line = "Ran '{}' with {}.".format(command.text.lower(), args)
   log.history(hist_line)
 
 def main_loop(context: Context) -> Context:
