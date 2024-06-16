@@ -40,8 +40,8 @@ class Command(pydantic.BaseModel):
   text: str
   description: str
   function: Callable[[Context, Arguments], Context]
-  allowed_states: Optional[Tuple[States]] = None
-  blocked_states: Optional[Tuple[States]] = None
+  allowed_states: Optional[set[States]] = None
+  blocked_states: Optional[set[States]] = None
 
   def can_run_in_context(self: Self, context: Context) -> bool:
     if self.blocked_states is not None:
