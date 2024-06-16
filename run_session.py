@@ -87,8 +87,16 @@ def controlBreak(context: Context, args: tuple[str]) -> Context:
       return context
 
 def beginCombat(context: Context, args: tuple[str]) -> Context:
-  log.info("we do be fighting")
-  return Context(state = States.CombatSetup)
+  log.info("Feature not yet implemented")
+  return context
+
+def saveContext(context: Context, args: tuple[str]) -> Context:
+  log.info("Feature not yet implemented")
+  return context
+
+def loadContext(context: Context, args: tuple[str]) -> Context:
+  log.info("Feature not yet implemented")
+  return context
 
 class Commands(Enum):
   HELP = Command(text = 'HELP',
@@ -110,6 +118,12 @@ class Commands(Enum):
                    description = "begins a combat encounter.",
                    function = beginCombat,
                    blocked_states = (States.Break,))
+  SAVE = Command(text = 'SAVE',
+                 description = "Saves current context to file to load later. Program loads most recent save.",
+                 function = saveContext)
+  LOAD = Command(text = 'LOAD',
+                 description = "Loads different saved context if most recent save isn't desired.",
+                 function = loadContext)
 
 def start_session() -> Context:
   log.info("New session started")
