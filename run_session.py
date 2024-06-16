@@ -100,22 +100,22 @@ def loadContext(context: Context, args: tuple[str]) -> Context:
 
 class Commands(Enum):
   HELP = Command(text = 'HELP',
-                 description = "Prints this message with no arguments or provides more detail on another command",
+                 description = "Prints this message with no arguments or provides more detail on another command.",
                  function = printHelp)
   TODO = Command(text = 'TODO',
-                 description = "appends note to todo list.",
+                 description = "Appends note to todo list.",
                  function = addTodo)
   QUIT = Command(text = 'QUIT',
-                 description = "ignores any argumments, quits program.",
+                 description = "Ignores any argumments, quits program.",
                  function = quitSession)
   ECHO = Command(text = 'ECHO',
-                 description = "echoes arguments.",
+                 description = "Echoes arguments.",
                  function = echoArguments)
   BREAK = Command(text = 'BREAK',
-                  description = "desginates start or end of a break, must be followed by 'start' or 'stop'",
+                  description = "Desginates start or end of a break, must be followed by 'start' or 'stop'.",
                   function = controlBreak)
   COMBAT = Command(text = 'COMBAT',
-                   description = "begins a combat encounter.",
+                   description = "Begins a combat encounter.",
                    function = beginCombat,
                    blocked_states = (States.Break,))
   SAVE = Command(text = 'SAVE',
