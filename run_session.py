@@ -116,7 +116,7 @@ def start_session() -> Context:
   return Context(state = States.Exploration)
 
 def write_generic_command_history(command: Command, args: tuple[str]) -> None:
-  hist_line = "Ran '{}' with {}.".format(command.text.lower(), args)
+  hist_line = "> Ran '{}' with {}.".format(command.text.lower(), args)
   log.history(hist_line)
 
 def main_loop(context: Context) -> Context:
