@@ -41,6 +41,21 @@ class Command(pydantic.BaseModel):
   allowed_states: Optional[Tuple[States]] = None
   blocked_states: Optional[Tuple[States]] = None
 
+  def can_run_in_context(self: Self, context: Context) -> bool:
+    if self.blocked_states is not None:
+      if context.state in self.blocked_states:
+        log.warning("Command is not allowed in current state: ({}, {}).".format(self.text, context.state))
+        return False
+    if self.allowed_states is not None:
+      if context.state not in self.allowed_states:
+        log.warning("Command is not allowed in current state: ({}, {}).".format(self.text, context.state))
+        return False
+    return True
+
+  def write_generic_history(self: Self, args: tuple[str]) -> None:
+    hist_line = "> Ran '{}' with {}.".format(self.text.lower(), args)
+    log.history(hist_line)
+
 def printHelp(context: Context, args: tuple[str]) -> Context:
   if args == [] or args[0].upper() == Commands.HELP.value.text:
     log.info("Following commands:")
@@ -129,36 +144,29 @@ def start_session() -> Context:
   log.info("New session started")
   return Context(state = States.Exploration)
 
-def write_generic_command_history(command: Command, args: tuple[str]) -> None:
-  hist_line = "> Ran '{}' with {}.".format(command.text.lower(), args)
-  log.history(hist_line)
-
-def main_loop(context: Context) -> Context:
+def get_command(context: Context) -> tuple[Optional[Command], tuple[str]]:
   command_str: str = input(context.command_prompt())
   command_text: str = command_str.split(' ')[0]
   args: tuple[str] = command_str.split(' ')[1:]
-  
   try:
-    command = Commands[command_text.upper()].value
+    command: Command =  Commands[command_text.upper()].value
+    return (command, args)
   except KeyError:
     log.warning("Unrecognised command.")
-    return context
+    return (None, args)
 
-  log.debug(command.blocked_states)
-  log.debug(command.allowed_states)
-  log.debug(context.state)
-  if command.blocked_states is not None:
-    if context.state in command.blocked_states:
-      log.warning("Command is not allowed in current state: ({}, {}).".format(command.text, context.state))
-      return context
-  if command.allowed_states is not None:
-    if context.state not in command.allowed_states:
-      log.warning("Command is not allowed in current state: ({}, {}).".format(command.text, context.state))
-      return context
-  write_generic_command_history(command, args)
+def main_loop(context: Context) -> Context:
+  command, args = get_command(context)
+  if command is None:
+    return context
+  log.debug("Command identified as: {}".format(command))
+
+  if not command.can_run_in_context(context):
+    return context
+  log.debug("Command is runnable in this context")
+
+  command.write_generic_history(args)
   context = command.function(context, args)
-  log.debug("Returning context")
-  log.debug(context)
   return context
 
 def main() -> None:
