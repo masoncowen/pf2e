@@ -51,3 +51,4 @@ docs/_build/
 
 # Other stuff
 pyvenv.cfg
+tests/__pycache__
