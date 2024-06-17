@@ -5,6 +5,7 @@ from enum import Enum, auto
 from typing import *
 
 from stackoverflow_logging import log
+from pathfinder import Character
 
 type Arguments = Sequence[str]
 
@@ -13,11 +14,6 @@ class States(Enum):
   Break = auto()
   CombatSetup = auto()
   Combat = auto()
-
-class Character(pydantic.BaseModel):
-  name: str
-  actions_remaining: int = 3
-  max_actions: int = 3
 
 class Context(pydantic.BaseModel):
   state: States
