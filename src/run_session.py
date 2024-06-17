@@ -68,7 +68,7 @@ def printHelp(context: Context, args: Arguments) -> Context:
     log.info("Specific help is not yet supported.")
   return context
 
-def addTodo(context: Context, args: Arguments) -> None:
+def addTodo(context: Context, args: Arguments) -> Context:
   todo = " ".join(args)
   with open('../todolist.md', 'a') as todo_list:
     todo_list.write('- [ ] {}'.format(todo))
