@@ -134,7 +134,7 @@ class Commands(Enum):
   COMBAT = Command(text = 'COMBAT',
                    description = "Begins a combat encounter.",
                    function = beginCombat,
-                   blocked_states = (States.Break,))
+                   blocked_states = {States.Break})
   SAVE = Command(text = 'SAVE',
                  description = "Saves current context to file to load later. Program loads most recent save.",
                  function = saveContext)
