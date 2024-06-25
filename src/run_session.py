@@ -7,7 +7,7 @@ from typing import *
 from stackoverflow_logging import log
 from pathfinder import Party
 from engines import Engine
-# from engines import CombatEngine
+from engines import CombatEngine
 from private import HardCodedCombatEncountersPleaseChange, HardCodedPartyPleaseChange
 
 type Arguments = Sequence[str]
@@ -61,6 +61,7 @@ class Context(pydantic.BaseModel):
     log.debug("Main loop started")
     self.get_utility_command()
     if self.command_info is None:
+      self.debug("Utility command not identified")
       if self.engine is not None:
         self.engine.main_loop()
         return None
@@ -148,6 +149,7 @@ class Context(pydantic.BaseModel):
     return None
 
   def beginEngine(self: Self) -> None:
+    log.info("Beginning a story")
     if len(self.command_info.arguments) == 0:
       log.warning("Command must be followed by name of engine.")
       log.warning("Current engines: combat.")
@@ -156,8 +158,9 @@ class Context(pydantic.BaseModel):
       log.warning("Too many arguments")
     match self.command_info.arguments[0].upper():
       case "COMBAT":
-        self.debug("Combat is to be tested")
-        # self.engine = CombatEngine(party = self.party, possible_encounters = HardCodedCombatEncountersPleaseChange)
+        log.debug("Combat is to be tested")
+        self.engine = CombatEngine()
+        self.engine.setup(self.party, HardCodedCombatEncountersPleaseChange)
     return None
 
   def saveContext(self: Self) -> None:
@@ -169,7 +172,6 @@ class Context(pydantic.BaseModel):
     return None
   
 def start_session() -> Context:
-  log.info("New session started")
   party = []
   for member in HardCodedPartyPleaseChange:
     party.append(member.value)
