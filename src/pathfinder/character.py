@@ -45,6 +45,7 @@ class PlayerCharacter(pydantic.BaseModel):
   health_bonus: int = 0
   pf_class: pfClass
   status: Optional[Status] = None
+  max_actions: int = 3
 
   @pydantic.computed_field
   @property

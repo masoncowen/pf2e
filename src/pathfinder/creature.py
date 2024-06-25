@@ -30,3 +30,9 @@ class Creature(pydantic.BaseModel):
         return 120
       case 4:
         return 160
+
+  @pydantic.model_validator(mode='after')
+  def get_name(self: Self) -> Self:
+      if self.name is None:
+          self.name = self.species_name
+      return self
