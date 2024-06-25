@@ -1,5 +1,5 @@
 from typing import Union
 
 from .combat import CombatEngine
+from .base import Engine
 
-type Engine = Union[CombatEngine]
