@@ -143,12 +143,29 @@ class InitativeTracker(pydantic.BaseModel):
     if next_init == 0:
       self.initiative = self.max_initiative
 
+  def set_new_combatant_initiative(self: Self, new_initiative) -> None:
+    combatant = (self.combatant_dict[self.initiative]
+                     .pop(self.same_initiative_index))
+    self.add_to_initiative(combatant, initiative = new_initiative)
+    self.next()
+
+  def list_order(self: Self) -> None:  
+    for i in range(self.max_initiative, 0, -1):
+      if i in self.combatant_dict:
+        for combatant in self.combatant_dict[i]:
+          log.info("Initiative {}: {}".format(i, combatant.name))
+    return None
+
 class CombatEngine(Engine):
   encounter: Optional[CombatEncounter] = None
   initiative_tracker: Optional[InitativeTracker] = None
   possible_commands: tuple[CombatCommandInfo] = (
       CombatCommandInfo(text = "SKIP", description = "Skips combatant until next round"),
-      CombatCommandInfo(text = "DELAY", description = "Delays combatant's turn until after next combatant")
+      CombatCommandInfo(text = "DELAY", description = "Delays combatant's turn until after next combatant"),
+      CombatCommandInfo(text = "SHOW", description = "Shows information, accepts single argument."),
+      CombatCommandInfo(text = "SET", description = "Changes variables, just health for now"),
+      CombatCommandInfo(text = "ADJUST", description = "Changes variables, just health for now"),
+      # CombatCommandInfo(text = "ATTACK", description = "A
       )
 
   def can_run_command(self: Self) -> bool:
@@ -161,15 +178,24 @@ class CombatEngine(Engine):
         self.initiative_tracker.skip()
       case "DELAY":
         self.initiative_tracker.delay()
+      case "SHOW":
+        self.showInformation()
+      case "SET":
+        self.setInformation()
+      case "ADJUST":
+        self.adjustInformation()
     return None
 
   def command_prompt(self: Self) -> str:
     if self.initiative_tracker is None:
       return "!!: "
     current = self.initiative_tracker.current()
-    return '!{} {}/{}: '.format(current.name,
-                                self.initiative_tracker.actions_remaining,
-                                current.max_actions)
+    return '!{} ({}/{}) AC:{} HP:{}/{}: '.format(current.name,
+                                 self.initiative_tracker.actions_remaining,
+                                 current.max_actions,
+                                 current.AC,
+                                 current.status.health,
+                                 current.max_health)
 
   def select_encounter(self: Self, possible_encounters: Type[Enum]) -> None:
     log.info("Select encounter:")
@@ -190,3 +216,54 @@ class CombatEngine(Engine):
     self.select_encounter(possible_encounters)
     self.initiative_tracker = InitativeTracker(party, self.encounter)
     return None
+
+  def showInformation(self: Self) -> None:
+    args = self.command_info.arguments
+    if args is None or len(args) < 1:
+      return None
+    match self.command_info.arguments[0].upper():
+      case "ORDER":
+        self.initiative_tracker.list_order()
+      case "HEALTH":
+        current_combatant = self.initiative_tracker.current()
+        name = current_combatant.name
+        chealth = current_combatant.status.health
+        mhealth = current_combatant.max_health
+        log.info("{}'s current health is: {}/{}".format(name, chealth, mhealth))
+      case "AC":
+        current_combatant = self.initiative_tracker.current()
+        log.info("{}'s AC is: {}".format(current_combatant.name, current_combatant.AC))
+      case "INITIATIVE":
+        current_combatant = self.initiative_tracker.current()
+        log.info("{}'s iniative is: {}".format(current_combatant.name, self.initiative_tracker.initiative))
+
+  def adjustInformation(self: Self):
+    match self.command_info.arguments[0].upper():
+      case "HEALTH":
+        try:
+          hp_change = int(self.command_info.arguments[1])
+          self.initiative_tracker.current().status.health += hp_change
+          self.showInformation()
+        except Exception as e:
+          log.debug(e)
+          log.info(e)
+
+  def setInformation(self: Self):
+    match self.command_info.arguments[0].upper():
+      case "HEALTH":
+        try:
+          new_health = int(self.command_info.arguments[1])
+          self.initiative_tracker.current().status.health = new_health
+          self.showInformation()
+        except Exception as e:
+          log.debug(e)
+          return None
+      case "INITIATIVE":
+        try:
+          new_initiative = int(self.command_info.arguments[1])
+        except Exception as e:
+          log.debug(e)
+          return None
+        self.initiative_tracker.set_new_combatant_initiative(new_initiative)
+        return None
+
