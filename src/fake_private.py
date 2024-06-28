@@ -1,6 +1,7 @@
 from enum import Enum
 
-from pathfinder.character import pfClasses, pfAncestries, PlayerCharacter
+from pathfinder.character import Ancestries, PlayerCharacter
+from pathfinder.pfclass import pfClasses
 from pathfinder.creature import Creature
 from engines.combat import CombatEncounter, ThreatLevel
 
@@ -27,4 +28,4 @@ class HardCodedCombatEncountersPleaseChange(Enum):
                                      filler_creature = Creatures.RedDragon.value)
 
 class HardCodedPartyPleaseChange(Enum):
-  Jake = PlayerCharacter(name = "Bhelmar", AC=14, CON=3, pf_class = pfClasses.Druid.value, pf_ancestry = pfAncestries.Dwarf.value)
+  Jake = PlayerCharacter(name = "Bhelmar", AC=14, CON=3, pf_class = pfClasses.Druid.value, pf_ancestry = Ancestries.Dwarf.value)
