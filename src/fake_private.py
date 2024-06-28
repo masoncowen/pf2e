@@ -3,6 +3,7 @@ from enum import Enum
 from pathfinder.character import Ancestries, PlayerCharacter
 from pathfinder.pfclass import pfClasses
 from pathfinder.creature import Creature
+from pathfinder.equipment import Equipment, Armours
 from engines.combat import CombatEncounter, ThreatLevel
 
 class Creatures(Enum):
