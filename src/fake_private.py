@@ -6,7 +6,7 @@ from engines.combat import CombatEncounter, ThreatLevel
 
 class Creatures(Enum):
   RedDragon = Creature(species_name = "Red Dragon", level = -1, max_health = 8, AC = 15)
-  DaveFromAccounting = Creature(species_name = "Accountant", level = 3, max_health = 50, AC = 17)
+  DaveFromAccounting = Creature(name = "Dave", species_name = "Accountant", level = 3, max_health = 50, AC = 17)
   Steve = Creature(species_name = "Steve", level = 5, max_health = 400, AC = 30)
 
 class HardCodedCombatEncountersPleaseChange(Enum):
