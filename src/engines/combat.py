@@ -68,36 +68,38 @@ class InitativeTracker(pydantic.BaseModel):
   def __init__(self: Self, party: Party, encounter: CombatEncounter):
     super().__init__()
     for member in party:
-      initiative = int(input("Initiative for {}?".format(member.name)))
-      if initiative in self.combatant_dict:
-        self.combatant_dict[initiative].append(member)
-        continue
-      self.combatant_dict[initiative] = [member]
+      self.add_to_initiative(member)
 
     if encounter.boss_creature_list is not None:
       for creature in encounter.boss_creature_list:
-        initiative = int(input("Initiative for {}?".format(creature.species_name)))
-        if initiative in self.combatant_dict:
-          self.combatant_dict[initiative].append(creature)
-          continue
-        self.combatant_dict[initiative] = [creature]
+        self.add_to_initiative(creature)
 
     if (minion := encounter.filler_creature) is not None:
       minion_count = encounter.calculate_minion_count(party)
-      if minion_count == 0:
-        return
-      initiative = int(input("Initiative for {}?".format(minion.species_name)))
-      if initiative in self.combatant_dict:
-        self.combatant_dict[initiative].append(minion)
-      else:
-        self.combatant_dict[initiative] = [minion]
-      for i in range(minion_count - 1):
-        self.combatant_dict[initiative].append(minion)
+      self.add_to_initiative(minion, count=minion_count)
 
     for init in self.combatant_dict:
       if init > self.max_initiative:
         self.max_initiative = init
     self.initiative = self.max_initiative
+
+  def add_to_initiative(self: Self, combatant: Combatant, count: int = 1, initiative: int = 0) -> None:
+    if count == 0:
+      return
+    if initiative == 0:
+      possible_init = input("Initiative for {}?".format(combatant.name))
+      try:
+        initiative = int(possible_init)
+      except Exception as e:
+        log.info("Empty or invalid initiative, setting to 1")
+        initiative = 1
+    if initiative in self.combatant_dict:
+      self.combatant_dict[initiative].append(combatant)
+    else:
+      self.combatant_dict[initiative] = [combatant]
+    if count > 1:
+      for i in range(count - 1):
+        self.combatant_dict[initiative].append(combatant)
 
   def first(self: Self) -> Combatant:
     return self.combatant_dict[self.max_initiative][0]
