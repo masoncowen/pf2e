@@ -20,6 +20,7 @@ class Engine(pydantic.BaseModel):
     for command in self.possible_commands:
       if command_text.upper() == command.text:
         self.command_info = command
+        self.command_info.arguments = arguments
     return None
 
   def main_loop(self: Self, arguments: Arguments) -> None:
