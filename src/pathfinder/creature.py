@@ -2,6 +2,9 @@ import pydantic
 
 from typing import *
 
+class Status(pydantic.BaseModel):
+  health: int
+
 class Creature(pydantic.BaseModel):
   name: Optional[str] = None
   species_name: str
@@ -9,6 +12,7 @@ class Creature(pydantic.BaseModel):
   max_health: int
   AC: int
   max_actions: int = 3
+  status: Optional[Status] = None
 
   def xp_cost(self: Self, party_level: int) -> int:
     match self.level - party_level:
@@ -36,3 +40,9 @@ class Creature(pydantic.BaseModel):
       if self.name is None:
           self.name = self.species_name
       return self
+
+  @pydantic.model_validator(mode='after')
+  def get_status(self: Self) -> Self:
+    if self.status is None:
+        self.status = Status(health = self.max_health)
+    return self

@@ -5,8 +5,6 @@ from typing import *
 
 # This class is for temporary information
 class Status(pydantic.BaseModel):
-  initiative: int
-  actions_remaining: int = 3
   health: int
 
 class pfClass(pydantic.BaseModel):
@@ -51,3 +49,9 @@ class PlayerCharacter(pydantic.BaseModel):
   @property
   def max_health(self: Self) -> int:
     return (self.pf_class.health_per_level + self.CON) * self.level + self.health_bonus
+
+  @pydantic.model_validator(mode='after')
+  def get_status(self: Self) -> Self:
+    if self.status is None:
+        self.status = Status(health = self.max_health)
+    return self
