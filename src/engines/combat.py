@@ -5,7 +5,7 @@ from enum import Enum, auto
 
 from pathfinder import Character, Creature, Party
 from .base import Engine
-from utils.types import CommandInfo
+from utils.types import CommandInfo, Arguments
 from utils.log import log
 
 type Combatant = Union[Character, Creature]
@@ -91,7 +91,6 @@ class InitativeTracker(pydantic.BaseModel):
       try:
         initiative = int(possible_init)
       except Exception as e:
-        log.info("Empty or invalid initiative, setting to 1")
         initiative = 1
     if initiative in self.combatant_dict:
       self.combatant_dict[initiative].append(combatant)
@@ -217,13 +216,15 @@ class CombatEngine(Engine):
   def setup(self: Self, party: Party, possible_encounters: Type[Enum]) -> None:
     self.select_encounter(possible_encounters)
     self.initiative_tracker = InitativeTracker(party, self.encounter)
+    self.showInformation(args=["ORDER"])
     return None
 
-  def showInformation(self: Self) -> None:
-    args = self.command_info.arguments
+  def showInformation(self: Self, args: Optional[Arguments] = None) -> None:
+    if args is None:
+      args = self.command_info.arguments
     if args is None or len(args) < 1:
       return None
-    match self.command_info.arguments[0].upper():
+    match args[0].upper():
       case "ORDER":
         self.initiative_tracker.list_order()
       case "HEALTH":
@@ -255,18 +256,23 @@ class CombatEngine(Engine):
       case "HEALTH":
         try:
           new_health = int(self.command_info.arguments[1])
+          old_health = self.initiative_tracker.current().status.health
           self.initiative_tracker.current().status.health = new_health
           self.showInformation()
+          log.info("Updated {}'s health from {} to {}".format(self.initiative_tracker.current().name, old_health, new_health))
         except Exception as e:
           log.debug(e)
           return None
+        return None
       case "INITIATIVE":
         try:
           new_initiative = int(self.command_info.arguments[1])
         except Exception as e:
           log.debug(e)
           return None
+        old_initiative = self.initiative_tracker.initiative
         self.initiative_tracker.set_new_combatant_initiative(new_initiative)
+        log.info("Updated {}'s initiative from {} to {}".format(self.initiative_tracker.current().name, old_initiative, new_initiative))
         return None
       case "NAME":
         old_name = self.initiative_tracker.current().name 
@@ -296,3 +302,4 @@ class CombatEngine(Engine):
       log.info(e)
       return None
     combatant.status.health -= amount
+    log.info("Reduced {}'s health by {}: {} to {}".format(combatant.name, amount, combatant.status.health + amount, combatant.status.health))
