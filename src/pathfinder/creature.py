@@ -14,6 +14,12 @@ class Creature(pydantic.BaseModel):
   max_actions: int = 3
   status: Optional[Status] = None
 
+  def copy(self: Self) -> Self:
+    return Creature(species_name = self.species_name,
+                    level = self.level,
+                    max_health = self.max_health,
+                    AC = self.AC)
+
   def xp_cost(self: Self, party_level: int) -> int:
     match self.level - party_level:
       case -4:

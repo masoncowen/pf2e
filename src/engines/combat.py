@@ -99,7 +99,7 @@ class InitativeTracker(pydantic.BaseModel):
       self.combatant_dict[initiative] = [combatant]
     if count > 1:
       for i in range(count - 1):
-        self.combatant_dict[initiative].append(combatant)
+        self.combatant_dict[initiative].append(combatant.copy())
 
   def first(self: Self) -> Combatant:
     return self.combatant_dict[self.max_initiative][0]
