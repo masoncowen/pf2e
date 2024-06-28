@@ -28,4 +28,7 @@ class HardCodedCombatEncountersPleaseChange(Enum):
                                      filler_creature = Creatures.RedDragon.value)
 
 class HardCodedPartyPleaseChange(Enum):
-  Jake = PlayerCharacter(name = "Bhelmar", AC=14, CON=3, pf_class = pfClasses.Druid.value, pf_ancestry = Ancestries.Dwarf.value)
+  Jake = PlayerCharacter(name = "Bhelmar", DEX=2, CON=3,
+                         pf_class = pfClasses.Druid.value,
+                         ancestry = Ancestries.Dwarf.value,
+                         equipment = Equipment(armour = Armours.ScaleMail.value))
