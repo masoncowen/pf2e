@@ -266,4 +266,7 @@ class CombatEngine(Engine):
           return None
         self.initiative_tracker.set_new_combatant_initiative(new_initiative)
         return None
+      case "NAME":
+        self.initiative_tracker.current().name = " ".join(self.command_info.arguments[1:])
+        return None
 
