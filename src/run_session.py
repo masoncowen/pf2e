@@ -27,6 +27,7 @@ class UtilityCommands(Enum):
   SAVE = UtilityCommandInfo(text = 'SAVE', description = "Saves current context to file to load later. Program loads most recent save.")
   LOAD = UtilityCommandInfo(text = 'LOAD', description = "Loads different saved context if most recent save isn't desired.")
   BEGIN = UtilityCommandInfo(text = 'BEGIN', description = "bool states that require engines (just combat currently).", allowed_in_break = False)
+  END = UtilityCommandInfo(text = 'END', description = "Ends whatever engine is currently running.", allowed_in_break = False)
 
 class Context(pydantic.BaseModel):
   party: Party
@@ -100,6 +101,8 @@ class Context(pydantic.BaseModel):
         self.loadContext()
       case "BEGIN":
         self.beginEngine()
+      case "END":
+        self.endEngine()
     return None
 
   def write_generic_history(self: Self) -> None:
@@ -168,6 +171,9 @@ class Context(pydantic.BaseModel):
         self.engine = CombatEngine()
         self.engine.setup(self.party, HardCodedCombatEncountersPleaseChange)
     return None
+
+  def endEngine(self: Self) -> None:
+    self.engine = None
 
   def saveContext(self: Self) -> None:
     log.info("Feature not yet implemented")
