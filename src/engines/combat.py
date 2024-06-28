@@ -165,7 +165,7 @@ class CombatEngine(Engine):
       CombatCommandInfo(text = "SHOW", description = "Shows value of variable."),
       CombatCommandInfo(text = "SET", description = "Changes variables to value."),
       CombatCommandInfo(text = "ADJUST", description = "Adjust variables by value."),
-      # CombatCommandInfo(text = "ATTACK", description = "A
+      CombatCommandInfo(text = "ATTACK", description = "Basic verison just to reduce someone's health when not their turn."),
       )
 
   def can_run_command(self: Self) -> bool:
@@ -184,6 +184,8 @@ class CombatEngine(Engine):
         self.setInformation()
       case "ADJUST":
         self.adjustInformation()
+      case "ATTACK":
+        self.reduceCombatantHealth()
     return None
 
   def command_prompt(self: Self) -> str:
@@ -270,3 +272,24 @@ class CombatEngine(Engine):
         self.initiative_tracker.current().name = " ".join(self.command_info.arguments[1:])
         return None
 
+  def reduceCombatantHealth(self: Self):
+    combatant_list = []
+    for initiative in (combatants := self.initiative_tracker.combatant_dict):
+      for combatant in combatants[initiative]:
+        log.info("{} - {} {}/{}".format(len(combatant_list),
+                                        combatant.name,
+                                        combatant.status.health,
+                                        combatant.max_health))
+        combatant_list.append(combatant)
+    selection = input("?: ")
+    try:
+      combatant = combatant_list[int(selection)]
+    except Exception as e:
+      log.info(e)
+      return None
+    try:
+      amount = int(input("Reduce by: "))
+    except Exception as e:
+      log.info(e)
+      return None
+    combatant.status.health -= amount
