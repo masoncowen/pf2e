@@ -7,7 +7,11 @@ from typing import *
 from stackoverflow_logging import log
 from pathfinder import Party
 from engines import Engine, CombatEngine
-from private import HardCodedCombatEncountersPleaseChange, HardCodedPartyPleaseChange
+try:
+  from private import HardCodedCombatEncountersPleaseChange, HardCodedPartyPleaseChange
+except:
+  print("Unable to load private, loading fake_private instead")
+  from fake_private import HardCodedCombatEncountersPleaseChange, HardCodedPartyPleaseChange
 from utils.types import Arguments, CommandInfo
 
 class UtilityCommandInfo(CommandInfo):
