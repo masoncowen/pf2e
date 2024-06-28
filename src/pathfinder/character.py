@@ -3,6 +3,7 @@ import pydantic
 from enum import Enum, auto
 from typing import *
 
+from .equipment import Equipment, Weapons, Armours, Shields
 from .pfclass import pfClass
 # This class is for temporary information
 class Status(pydantic.BaseModel):
@@ -31,8 +32,21 @@ class PlayerCharacter(pydantic.BaseModel):
   pf_class: pfClass
   pf_ancestry: pfAncestry
   status: Optional[Status] = None
+  equipment: Equipment = Equipment()
   max_actions: int = 3
 
+  @pydantic.computed_field
+  @property
+  def AC(self: Self) -> int:
+    armour = self.equipment.armour
+    log.debug(armour)
+    effective_DEX = min(self.DEX, armour.DEX_cap)
+    log.debug(effective_DEX)
+    AC_bonus = armour.AC_bonus
+    log.debug(AC_bonus)
+    proficiency_bonus = self.proficiency_bonus(armour.weight)
+    log.debug(proficiency_bonus)
+    return 10 + effective_DEX + AC_bonus + proficiency_bonus
   @pydantic.computed_field
   @property
   def max_health(self: Self) -> int:
