@@ -117,6 +117,9 @@ class Context(pydantic.BaseModel):
         if command_summary.text == "PASS":
           continue
         log.info("'{}' - {}".format(command_summary.text.lower(), command_summary.description))
+      log.info("Combat commands:")
+      for command_summary in CombatEngine().possible_commands:
+        log.info("'{}' - {}".format(command_summary.text.lower(), command_summary.description))
     elif len(self.command_info.arguments) == 1:
       log.info("Specific help is not yet supported.")
     return
