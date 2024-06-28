@@ -3,10 +3,10 @@ import pydantic
 from typing import *
 from enum import Enum, auto
 
-from stackoverflow_logging import log
 from pathfinder import Character, Creature, Party
 from .base import Engine
 from utils.types import CommandInfo
+from utils.log import log
 
 type Combatant = Union[Character, Creature]
 

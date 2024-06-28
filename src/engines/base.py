@@ -3,7 +3,7 @@ import pydantic
 from typing import *
 
 from utils.types import Arguments, CommandInfo
-from stackoverflow_logging import log
+from utils.log import log
 
 class Engine(pydantic.BaseModel):
   possible_commands: tuple[Type[CommandInfo]]

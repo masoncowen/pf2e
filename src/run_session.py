@@ -4,7 +4,7 @@ import pydantic
 from enum import Enum, auto
 from typing import *
 
-from stackoverflow_logging import log
+from utils.log import log
 from pathfinder import Party
 from engines import Engine, CombatEngine
 try:
