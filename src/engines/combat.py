@@ -160,11 +160,11 @@ class CombatEngine(Engine):
   encounter: Optional[CombatEncounter] = None
   initiative_tracker: Optional[InitativeTracker] = None
   possible_commands: tuple[CombatCommandInfo] = (
-      CombatCommandInfo(text = "SKIP", description = "Skips combatant until next round"),
-      CombatCommandInfo(text = "DELAY", description = "Delays combatant's turn until after next combatant"),
-      CombatCommandInfo(text = "SHOW", description = "Shows information, accepts single argument."),
-      CombatCommandInfo(text = "SET", description = "Changes variables, just health for now"),
-      CombatCommandInfo(text = "ADJUST", description = "Changes variables, just health for now"),
+      CombatCommandInfo(text = "SKIP", description = "Skips combatant until next round."),
+      CombatCommandInfo(text = "DELAY", description = "Delays combatant's turn until after next combatant."),
+      CombatCommandInfo(text = "SHOW", description = "Shows value of variable."),
+      CombatCommandInfo(text = "SET", description = "Changes variables to value."),
+      CombatCommandInfo(text = "ADJUST", description = "Adjust variables by value."),
       # CombatCommandInfo(text = "ATTACK", description = "A
       )
 
