@@ -269,7 +269,10 @@ class CombatEngine(Engine):
         self.initiative_tracker.set_new_combatant_initiative(new_initiative)
         return None
       case "NAME":
-        self.initiative_tracker.current().name = " ".join(self.command_info.arguments[1:])
+        old_name = self.initiative_tracker.current().name 
+        new_name = " ".join(self.command_info.arguments[1:])
+        self.initiative_tracker.current().name = new_name
+        log.info("Updated {}'s name to {}".format(old_name, new_name))
         return None
 
   def reduceCombatantHealth(self: Self):
