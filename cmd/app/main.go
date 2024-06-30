@@ -2,10 +2,12 @@ package main
 
 import (
   pf "internal/pathfinder"
-  "internal/engines"
+  // "internal/engines"
+  "log/slog"
 )
 
 func main() {
-  combat.Engine(pf.Character())
+  slog.Info(pf.Character(), "further_testing", true)
+
 }
 
