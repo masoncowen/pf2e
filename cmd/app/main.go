@@ -5,25 +5,28 @@ import (
     "os"
     tea "github.com/charmbracelet/bubbletea"
     "internal/engines/mainmenu"
+    "internal/engines/replacemetimer"
 )
 
 type sessionState int
 
 const (
-    setup sessionState = iota
-    entryView
+    mainMenuView sessionState = iota
+    timerView
     combatView
 )
 
 type model struct {
     state sessionState
     mainmenu tea.Model
+    timer tea.Model
 }
 
 func initialModel() model {
 	return model{
-        state: entryView,
+        state: mainMenuView,
         mainmenu: mainmenu.InitialModel(),
+        timer: replacemetimer.InitialModel(),
 	}
 }
 
@@ -34,6 +37,8 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     var cmd tea.Cmd
     switch msg := msg.(type) {
+    case mainmenu.StartMsg:
+        m.state = timerView
     case tea.KeyMsg:
         switch msg.String() {
         case "q":
@@ -42,7 +47,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     }
         
     switch m.state {
-    case entryView:
+    case mainMenuView:
         newMainMenu, newCmd := m.mainmenu.Update(msg)
         mainMenuModel, ok := newMainMenu.(mainmenu.Model)
         if !ok {
@@ -50,14 +55,24 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         }
         m.mainmenu = mainMenuModel
         cmd = newCmd
+    case timerView:
+        newTimer, newCmd := m.timer.Update(msg)
+        timerModel, ok := newTimer.(replacemetimer.Model)
+        if !ok {
+            panic("Could not perform assertion on mainmenu model")
+        }
+        m.timer = timerModel
+        cmd = newCmd
     }
     return m, cmd
 }
 
 func (m model) View() string {
     switch m.state {
-    case entryView:
-        return m.entry.View()
+    case mainMenuView:
+        return m.mainmenu.View()
+    case timerView:
+        return m.timer.View()
     // case combatView:
     //     return m.combat.View()
     }

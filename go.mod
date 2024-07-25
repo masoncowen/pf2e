@@ -5,6 +5,9 @@ go 1.22.4
 require internal/engines/mainmenu v0.1.0
 replace internal/engines/mainmenu => ./internal/engines/mainmenu
 
+require internal/engines/replacemetimer v0.1.0
+replace internal/engines/replacemetimer => ./internal/engines/replacemetimer
+
 require (
 	github.com/charmbracelet/bubbletea v0.26.6 // indirect
 	github.com/charmbracelet/x/ansi v0.1.2 // indirect

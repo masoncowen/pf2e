@@ -2,7 +2,7 @@ package mainmenu
 
 import (
     "fmt"
-	tea "github.com/charmbracelet/bubbletea"
+    tea "github.com/charmbracelet/bubbletea"
 )
 
 type menuOptions int
@@ -34,6 +34,8 @@ var activeMenuOptions = []menuOptions{
     quit,
 }
 
+type StartMsg struct {}
+
 type Model struct {
     cursor int
     printMessage string
@@ -64,7 +66,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case "enter", " ":
             switch activeMenuOptions[m.cursor] {
             case newSession:
-                m.printMessage = "Start"
+                return m, func() tea.Msg { return StartMsg{}}
             case loadPreviousSession:
                 m.printMessage = "Prev"
             case options:
