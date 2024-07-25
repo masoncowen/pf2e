@@ -4,7 +4,7 @@ import (
     "fmt"
     "os"
     tea "github.com/charmbracelet/bubbletea"
-    "internal/engines/entry"
+    "internal/engines/mainmenu"
 )
 
 type sessionState int

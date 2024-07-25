@@ -2,8 +2,8 @@ module mcowen.co.uk/pf2e
 
 go 1.22.4
 
-require internal/engines/entry v0.1.0
-replace internal/engines/entry => ./internal/engines/entry
+require internal/engines/mainmenu v0.1.0
+replace internal/engines/mainmenu => ./internal/engines/mainmenu
 
 require (
 	github.com/charmbracelet/bubbletea v0.26.6 // indirect
