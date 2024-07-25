@@ -1,4 +1,4 @@
-package entryui
+package mainmenu
 
 import (
     "fmt"

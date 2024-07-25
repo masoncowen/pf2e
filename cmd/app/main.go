@@ -17,13 +17,13 @@ const (
 
 type model struct {
     state sessionState
-    entry tea.Model
+    mainmenu tea.Model
 }
 
 func initialModel() model {
 	return model{
         state: entryView,
-        entry: entryui.InitialModel(),
+        mainmenu: mainmenu.InitialModel(),
 	}
 }
 
@@ -43,12 +43,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         
     switch m.state {
     case entryView:
-        newEntry, newCmd := m.entry.Update(msg)
-        entryModel, ok := newEntry.(entryui.Model)
+        newMainMenu, newCmd := m.mainmenu.Update(msg)
+        mainMenuModel, ok := newMainMenu.(mainmenu.Model)
         if !ok {
-            panic("Could not perform assertion on entryui model")
+            panic("Could not perform assertion on mainmenu model")
         }
-        m.entry = entryModel
+        m.mainmenu = mainMenuModel
         cmd = newCmd
     }
     return m, cmd
