@@ -59,7 +59,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         newTimer, newCmd := m.timer.Update(msg)
         timerModel, ok := newTimer.(replacemetimer.Model)
         if !ok {
-            panic("Could not perform assertion on mainmenu model")
+            panic("Could not perform assertion on timer model")
         }
         m.timer = timerModel
         cmd = newCmd
