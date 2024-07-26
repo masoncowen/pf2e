@@ -2,6 +2,12 @@ module mcowen.co.uk/pf2e
 
 go 1.22.4
 
+require internal/pathfinder v0.1.0
+replace internal/pathfinder => ./internal/pathfinder
+
+require internal/pathbuilder v0.1.0
+replace internal/pathbuilder => ./internal/pathbuilder
+
 require internal/engines/mainmenu v0.1.0
 replace internal/engines/mainmenu => ./internal/engines/mainmenu
 
