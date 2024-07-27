@@ -15,7 +15,7 @@ func check(e error) {
 }
  
 type party struct {
-    party []pf.Character
+    Party []pf.Character
 }
 
 func main() {
@@ -33,13 +33,13 @@ func main() {
         err2 := json.Unmarshal([]byte(jsonData), &pbc)
         check(err2)
 
-        char, err := pbc.Build.Convert()
-        check(err)
-        fmt.Println(char)
-        // jsonChar, err := json.Marshal(char)
-        // check(err)
+        char, err3 := pbc.Build.Convert()
+        check(err3)
+        // fmt.Println(char)
+        // jsonChar, err4 := json.Marshal(char)
+        // check(err4)
         // fmt.Printf("%s\n", jsonChar)
-        p.party = append(p.party, char)
+        p.Party = append(p.Party, char)
     }
     fmt.Println(p)
     jsonParty, err := json.Marshal(p)
