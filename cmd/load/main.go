@@ -35,13 +35,8 @@ func main() {
 
         char, err3 := pbc.Build.Convert()
         check(err3)
-        // fmt.Println(char)
-        // jsonChar, err4 := json.Marshal(char)
-        // check(err4)
-        // fmt.Printf("%s\n", jsonChar)
         p.Party = append(p.Party, char)
     }
-    fmt.Println(p)
     jsonParty, err := json.Marshal(p)
     check(err)
     fmt.Printf("%s\n", jsonParty)

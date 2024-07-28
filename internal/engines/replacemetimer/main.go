@@ -6,14 +6,24 @@ import (
     tea "github.com/charmbracelet/bubbletea"
 )
 
-type entry struct {
-  entryTime time.Time
-  entryText string
+type eventType int
+
+const (
+    BeginBreak eventType = iota
+    EndBreak
+    Note
+)
+
+
+type event struct {
+  eventTime time.Time
+  eventType eventType
+  eventText string
 }
   
 
 type Model struct {
-    entries []entry
+    entries []event
 }
 
 func InitialModel() Model {
@@ -24,17 +34,26 @@ func (m Model) Init() tea.Cmd {
     return nil
 }
 
+func log_event(e event) error {
+    return nil
+}
+
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
+        newEvent := event{}
         switch msg.String() {
         case "ctrl+c", "q":
             return m, tea.Quit
         case "enter", " ":
-            m.entries = append(m.entries, entry{time.Now(), "Blank Message"})
-          case "b":
-            m.entries = append(m.entries, entry{time.Now(), "Break"})
+            newEvent = event{time.Now(), Note, "Blank Note: Need to add text"}
+        case "b":
+            newEvent = event{time.Now(), BeginBreak, "Begin Break: maybe add context for break"}
+        case "r":
+            newEvent = event{time.Now(), EndBreak, "End Break: Not sure what text could be used for here?"}
         }
+        m.entries = append(m.entries, newEvent)
+        log_event(newEvent)
     }
     return m, nil
 }
@@ -43,7 +62,7 @@ func (m Model) View() string {
     s := "Pathfinder 2e Sessioner v.0.go.1\n\n"
     for _, entry := range m.entries {
       s += fmt.Sprintf("%s\n", time.Now().String())
-      s += fmt.Sprintf("%s %s\n", entry.entryTime.Format("3:4"), entry.entryText)
+      s += fmt.Sprintf("%s %s\n", entry.eventTime.Format("3:4"), entry.eventText)
     }
     return s
 }

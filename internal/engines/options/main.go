@@ -1,45 +1,41 @@
-package mainmenu
+package options
 
 import (
     "fmt"
-    tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-type menuOptions int
+type configOptions int
 
 const (
-    newSession menuOptions = iota
-    loadPreviousSession
-    optionsMenu
-    quit
+    quit configOptions = iota  
+    optionPlaceholder
 )
 
-func (o menuOptions) String() string {
+func (o configOptions) String() string {
     switch o {
-    case newSession:
-        return "New Session"
-    case loadPreviousSession:
-        return "Load Previous Session"
-    case optionsMenu:
-        return "Options"
     case quit:
         return "Quit"
+    case optionPlaceholder:
+        return "Placeholder"
     }
     return "ERROR"
 }
 
-var activeMenuOptions = []menuOptions{
-    newSession,
-    optionsMenu,
+var activeMenuOptions = []configOptions{
+    optionPlaceholder,
     quit,
 }
+    
+type BackMsg struct {}
 
-type StartMsg struct {}
-type OptionMsg struct {}
+type Options struct {
+    optionPlaceholder bool
+}
 
 type Model struct {
     cursor int
-    printMessage string
+    options Options
 }
 
 func InitialModel() Model {
@@ -66,14 +62,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             }
         case "enter", " ", "l":
             switch activeMenuOptions[m.cursor] {
-            case newSession:
-                return m, func() tea.Msg { return StartMsg{} }
-            case loadPreviousSession:
-                m.printMessage = "Prev"
-            case optionsMenu:
-                return m, func() tea.Msg { return OptionMsg{} }
+            case optionPlaceholder:
+                m.options.optionPlaceholder = !m.options.optionPlaceholder
             case quit:
-                return m, tea.Quit
+                return m, func() tea.Msg { return BackMsg{} }
             }
         }
     }
@@ -87,8 +79,20 @@ func (m Model) View() string {
         if m.cursor == i {
             cursor = ">"
         }
-
-        s += fmt.Sprintf("%s %s\n", cursor, option)
+        if option == quit {
+            s += fmt.Sprintf("%s %s\n", cursor, option)
+            continue
+        }
+        enabled := false
+        switch option {
+        case optionPlaceholder:
+            enabled = m.options.optionPlaceholder
+        }
+        value := "Disabled"
+        if enabled {
+            value = "Enabled"
+        }
+        s += fmt.Sprintf("%s %s %s\n", cursor, option, value)
     }
     return s
 }

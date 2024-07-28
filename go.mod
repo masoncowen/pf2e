@@ -14,6 +14,9 @@ replace internal/engines/mainmenu => ./internal/engines/mainmenu
 require internal/engines/replacemetimer v0.1.0
 replace internal/engines/replacemetimer => ./internal/engines/replacemetimer
 
+require internal/engines/options v0.1.0
+replace internal/engines/options => ./internal/engines/options
+
 require (
 	github.com/charmbracelet/bubbletea v0.26.6 // indirect
 	github.com/charmbracelet/x/ansi v0.1.2 // indirect
