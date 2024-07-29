@@ -8,6 +8,12 @@ import (
 )
 
 type BackMsg struct {}
+type NewSessionMsg struct {
+    CampaignPath string
+}
+type ReloadSessinMsg struct {
+    SessionPath string
+}
 
 type Model struct {
     ExistingSession bool
@@ -57,7 +63,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
                 m.cursor++
             }
         case "enter", " ", "l", "right":
-            return m, tea.Quit
+            if m.ExistingSession {
+                return m, func() tea.Msg { return ReloadSessinMsg{m.sessions[m.cursor]}}
+            }
+            return m, func() tea.Msg { return NewSessionMsg{m.campaigns[m.cursor]}}
         }
     }
     return m, nil

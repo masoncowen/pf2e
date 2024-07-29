@@ -63,6 +63,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.state = optionsView
     case options.BackMsg, sessionmenu.BackMsg:
         m.state = mainMenuView
+    case sessionmenu.NewSessionMsg:
+        m.state = timerView
+    case sessionmenu.ReloadSessinMsg:
+        m.state = timerView
     case tea.KeyMsg:
         switch msg.String() {
         case "q":
