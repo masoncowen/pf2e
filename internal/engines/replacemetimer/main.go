@@ -1,9 +1,10 @@
 package replacemetimer
 
 import (
-    "fmt"
+	"fmt"
     "time"
-    tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type eventType int
@@ -59,10 +60,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-    s := "Pathfinder 2e Sessioner v.0.go.1\n\n"
+    title := "Pathfinder 2e Sessioner v.0.go.1"
+    var titleStyle = lipgloss.NewStyle().
+    Align(lipgloss.Center).
+    BorderStyle(lipgloss.NormalBorder()).BorderBottom(true)
+    times := ""
+    notes := ""
     for _, entry := range m.entries {
-      s += fmt.Sprintf("%s\n", time.Now().String())
-      s += fmt.Sprintf("%s %s\n", entry.eventTime.Format("3:4"), entry.eventText)
+      times += fmt.Sprintf("%s\n", entry.eventTime.Format("3:4"))
+      notes += fmt.Sprintf("%s\n", entry.eventText)
     }
-    return s
+    return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(title), lipgloss.JoinHorizontal(lipgloss.Top, times, notes))
 }
