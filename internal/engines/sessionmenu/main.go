@@ -48,7 +48,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
         switch msg.String() {
-        case "ctrl+c", "q", "h":
+        case "ctrl+c", "q", "h", "left":
             return m, func() tea.Msg { return BackMsg{} }
         case "up", "k":
             if m.cursor > 0 {
@@ -58,8 +58,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             if m.cursor < len(m.sessions)-1 {
                 m.cursor++
             }
-        case "enter", " ", "l":
-
+        case "enter", " ", "l", "right":
+            return m, tea.Quit
         }
     }
     return m, nil
