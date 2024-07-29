@@ -9,7 +9,7 @@ type menuOptions int
 
 const (
     newSession menuOptions = iota
-    loadPreviousSession
+    loadOngoingSession
     optionsMenu
     quit
 )
@@ -18,8 +18,8 @@ func (o menuOptions) String() string {
     switch o {
     case newSession:
         return "New Session"
-    case loadPreviousSession:
-        return "Load Previous Session"
+    case loadOngoingSession:
+        return "Load Ongoing Session"
     case optionsMenu:
         return "Options"
     case quit:
@@ -28,22 +28,18 @@ func (o menuOptions) String() string {
     return "ERROR"
 }
 
-var activeMenuOptions = []menuOptions{
-    newSession,
-    optionsMenu,
-    quit,
-}
 
-type StartMsg struct {}
+type SelectSessionMsg struct {}
+type ReloadSessionMsg struct {}
 type OptionMsg struct {}
 
 type Model struct {
+    activeMenuOptions []menuOptions
     cursor int
-    printMessage string
 }
 
 func InitialModel() Model {
-    return Model{}
+    return Model{[]menuOptions{newSession, optionsMenu, quit,}, 0}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -61,15 +57,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
                 m.cursor--
             }
         case "down", "j":
-            if m.cursor < len(activeMenuOptions)-1 {
+            if m.cursor < len(m.activeMenuOptions)-1 {
                 m.cursor++
             }
         case "enter", " ", "l":
-            switch activeMenuOptions[m.cursor] {
+            switch m.activeMenuOptions[m.cursor] {
             case newSession:
-                return m, func() tea.Msg { return StartMsg{} }
-            case loadPreviousSession:
-                m.printMessage = "Prev"
+                return m, func() tea.Msg { return SelectSessionMsg{} }
+            case loadOngoingSession:
+                return m, func() tea.Msg { return ReloadSessionMsg{} }
             case optionsMenu:
                 return m, func() tea.Msg { return OptionMsg{} }
             case quit:
@@ -82,7 +78,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
     s := "Pathfinder 2e Sessioner v.0.go.1\n\n"
-    for i, option := range activeMenuOptions {
+    for i, option := range m.activeMenuOptions {
         cursor := " "
         if m.cursor == i {
             cursor = ">"

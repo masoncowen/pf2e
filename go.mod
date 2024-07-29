@@ -2,32 +2,39 @@ module mcowen.co.uk/pf2e
 
 go 1.22.4
 
-require internal/pathfinder v0.1.0
-replace internal/pathfinder => ./internal/pathfinder
-
-require internal/pathbuilder v0.1.0
-replace internal/pathbuilder => ./internal/pathbuilder
-
-require internal/engines/mainmenu v0.1.0
-replace internal/engines/mainmenu => ./internal/engines/mainmenu
-
-require internal/engines/replacemetimer v0.1.0
-replace internal/engines/replacemetimer => ./internal/engines/replacemetimer
-
-require internal/engines/options v0.1.0
-replace internal/engines/options => ./internal/engines/options
+require (
+  internal/pathfinder v0.1.0
+  internal/pathbuilder v0.1.0
+  internal/engines/mainmenu v0.1.0
+  internal/engines/replacemetimer v0.1.0
+  internal/engines/options v0.1.0
+  internal/engines/sessionmenu v0.1.0
+)
+replace (
+  internal/pathfinder => ./internal/pathfinder
+  internal/pathbuilder => ./internal/pathbuilder
+  internal/engines/mainmenu => ./internal/engines/mainmenu
+  internal/engines/replacemetimer => ./internal/engines/replacemetimer
+  internal/engines/options => ./internal/engines/options
+  internal/engines/sessionmenu => ./internal/engines/sessionmenu
+)
 
 require (
+	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/bubbletea v0.26.6 // indirect
-	github.com/charmbracelet/x/ansi v0.1.2 // indirect
+	github.com/charmbracelet/lipgloss v0.12.1 // indirect
+	github.com/charmbracelet/x/ansi v0.1.4 // indirect
 	github.com/charmbracelet/x/input v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.1.0 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
+	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/sync v0.7.0 // indirect
