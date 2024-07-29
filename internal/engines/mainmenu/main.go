@@ -50,7 +50,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
         switch msg.String() {
-        case "ctrl+c", "q", "h":
+        case "ctrl+c", "q", "h", "left":
             return m, tea.Quit
         case "up", "k":
             if m.cursor > 0 {
@@ -60,7 +60,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             if m.cursor < len(m.activeMenuOptions)-1 {
                 m.cursor++
             }
-        case "enter", " ", "l":
+        case "enter", " ", "l", "right":
             switch m.activeMenuOptions[m.cursor] {
             case newSession:
                 return m, func() tea.Msg { return SelectSessionMsg{} }
