@@ -2,6 +2,8 @@ package mainmenu
 
 import (
     "fmt"
+    "os"
+    "path/filepath"
     tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -28,7 +30,6 @@ func (o menuOptions) String() string {
     return "ERROR"
 }
 
-
 type SelectSessionMsg struct {}
 type ReloadSessionMsg struct {}
 type OptionMsg struct {}
@@ -38,7 +39,15 @@ type Model struct {
     cursor int
 }
 
-func InitialModel() Model {
+func InitialModel(pf2eDir string) Model {
+    sessionsDir := filepath.Join(pf2eDir, "sessions")
+    sessions, err := os.ReadDir(sessionsDir)
+    if os.IsNotExist(err) {
+        return Model{[]menuOptions{newSession, optionsMenu, quit,}, 0}
+    }
+    if len(sessions) > 0 {
+        return Model{[]menuOptions{newSession, loadOngoingSession, optionsMenu, quit,}, 0}
+    }
     return Model{[]menuOptions{newSession, optionsMenu, quit,}, 0}
 }
 

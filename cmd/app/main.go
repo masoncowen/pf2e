@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "os"
+    "path/filepath"
     tea "github.com/charmbracelet/bubbletea"
     "internal/engines/mainmenu"
     "internal/engines/replacemetimer"
@@ -16,6 +17,7 @@ const (
     mainMenuView sessionState = iota
     optionsView
     sessionMenuView
+    sessionMenuViewExistingSession
     timerView
     combatView
 )
@@ -29,11 +31,19 @@ type model struct {
 }
 
 func initialModel() model {
+    pf2eDir := os.Getenv("PF2E_DIR")
+    if pf2eDir == "" {
+        homeDir, err := os.UserHomeDir()
+        if err != nil {
+            panic(err)
+        }
+        pf2eDir = filepath.Join(homeDir, ".pf2e")
+    }
 	return model{
         state: mainMenuView,
-        mainmenu: mainmenu.InitialModel(),
+        mainmenu: mainmenu.InitialModel(pf2eDir),
         options: options.InitialModel(),
-        sessionmenu: sessionmenu.InitialModel(),
+        sessionmenu: sessionmenu.InitialModel(pf2eDir),
         timer: replacemetimer.InitialModel(),
 	}
 }
@@ -48,9 +58,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case mainmenu.SelectSessionMsg:
         m.state = sessionMenuView
     case mainmenu.ReloadSessionMsg:
-        m.state = sessionMenuView
+        m.state = sessionMenuViewExistingSession
     case mainmenu.OptionMsg:
-        m.state = optionsView   
+        m.state = optionsView
     case options.BackMsg, sessionmenu.BackMsg:
         m.state = mainMenuView
     case tea.KeyMsg:
@@ -80,12 +90,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case sessionMenuView:
         newSessionSelector, newCmd := m.sessionmenu.Update(msg)
         sessionsModel, ok := newSessionSelector.(sessionmenu.Model)
+        sessionsModel.ExistingSession = false
         if !ok {
-            panic("Could not perform assertion on options model")
+            panic("Could not perform assertion on sessions model")
         }
         m.sessionmenu = sessionsModel
         cmd = newCmd
-
+    case sessionMenuViewExistingSession:
+        newSessionSelector, newCmd := m.sessionmenu.Update(msg)
+        sessionsModel, ok := newSessionSelector.(sessionmenu.Model)
+        sessionsModel.ExistingSession = true
+        if !ok {
+            panic("Could not perform assertion on sessions model")
+        }
+        m.sessionmenu = sessionsModel
+        cmd = newCmd
     case timerView:
         newTimer, newCmd := m.timer.Update(msg)
         timerModel, ok := newTimer.(replacemetimer.Model)

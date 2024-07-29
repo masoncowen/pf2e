@@ -9,35 +9,33 @@ import (
 
 type BackMsg struct {}
 
-type session struct {
-    filepath string
-    name string
-}
-
 type Model struct {
-    sessions []session
+    ExistingSession bool
+    sessions []string
+    campaigns []string
     cursor int
 }
 
-func InitialModel() Model {
-    pf2eDir := os.Getenv("PF2E_DIR")
-    if pf2eDir == "" {
-        homeDir, err := os.UserHomeDir()
-        if err != nil {
-            panic(err)
-        }
-        pf2eDir = filepath.Join(homeDir, ".pf2e")
-    }
-    sessionsDir := filepath.Join(pf2eDir, "sessions")
-    sessions, err := os.ReadDir(sessionsDir)
-    if os.IsNotExist(err) {
+func InitialModel(pf2eDir string) Model {
+    campainsDir := filepath.Join(pf2eDir, "campaigns")
+    campaigns, errCampaign := os.ReadDir(campainsDir)
+    if os.IsNotExist(errCampaign) {
         return Model{}
     }
-    sessionList := []session{}
-    for _, currSession := range sessions {
-        sessionList = append(sessionList, session{currSession.Name(), currSession.Name()})
+    campaignList := []string{}
+    for _, currCampaign := range campaigns {
+        campaignList = append(campaignList, currCampaign.Name())
     }
-    return Model{sessions: sessionList}
+    sessionsDir := filepath.Join(pf2eDir, "sessions")
+    sessions, errSession := os.ReadDir(sessionsDir)
+    if os.IsNotExist(errSession) {
+        return Model{campaigns: campaignList}
+    }
+    sessionList := []string{}
+    for _, currSession := range sessions {
+        sessionList = append(sessionList, currSession.Name())
+    }
+    return Model{campaigns: campaignList, sessions: sessionList}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -67,13 +65,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
     s := "Pathfinder 2e Sessioner v.0.go.1\n\n"
-    for i, session := range m.sessions {
+    if m.ExistingSession {
+        for i, session := range m.sessions {
+            cursor := " "
+            if m.cursor == i {
+                cursor = ">"
+            }
+
+            s += fmt.Sprintf("%s %s\n", cursor, session)
+        }
+        return s
+    }
+    for i, campaign := range m.campaigns {
         cursor := " "
         if m.cursor == i {
             cursor = ">"
         }
 
-        s += fmt.Sprintf("%s %s\n", cursor, session)
+        s += fmt.Sprintf("%s %s\n", cursor, campaign)
     }
     return s
 }
