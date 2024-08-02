@@ -15,7 +15,7 @@ const (
 func (o configOptions) String() string {
     switch o {
     case quit:
-        return "Quit"
+        return "Return"
     case optionPlaceholder:
         return "Placeholder"
     }
@@ -50,7 +50,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
         switch msg.String() {
-        case "ctrl+c", "q", "h":
+        case "ctrl+c", "q":
             return m, tea.Quit
         case "up", "k":
             if m.cursor > 0 {
@@ -60,7 +60,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             if m.cursor < len(activeMenuOptions)-1 {
                 m.cursor++
             }
-        case "enter", " ", "l":
+        case "h", "left":
+            return m, func() tea.Msg { return BackMsg{} }
+        case "enter", " ", "l", "right":
             switch activeMenuOptions[m.cursor] {
             case optionPlaceholder:
                 m.options.optionPlaceholder = !m.options.optionPlaceholder

@@ -10,65 +10,94 @@ import (
 type eventType int
 
 const (
-    BeginBreak eventType = iota
+    Quit eventType = iota
+    BeginBreak
     EndBreak
     Note
+    BeginCombat
+    EndCombat
 )
 
-
-type event struct {
-  eventTime time.Time
-  eventType eventType
-  eventText string
+func (e eventType) String() string {
+    switch e {
+    case Quit:
+        return "Quit Application"
+    case BeginBreak:
+        return "Beginning of Break"
+    case EndBreak:
+        return "End of Break"
+    case Note:
+        return "Note"
+    case BeginCombat:
+        return "Start of Combat"
+    case EndCombat:
+        return "End of Combat"
+    }
+    return "Unknown Event Type"
 }
-  
+
+type Event struct {
+  Time time.Time
+  Type eventType
+  Text string
+}
 
 type Model struct {
-    entries []event
+    logFile string
+    entries []Event
 }
 
-func InitialModel() Model {
-    return Model{}
+func InitialModel(logFile string) Model {
+    return Model{logFile: logFile}
 }
 
 func (m Model) Init() tea.Cmd {
     return nil
 }
 
-func log_event(e event) error {
-    return nil
+
+func returnEvent(e Event) tea.Cmd {
+    return func() tea.Msg {
+        return e
+    }
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
-        newEvent := event{}
+        newEvent := Event{Time: time.Now()}
         switch msg.String() {
         case "ctrl+c", "q":
-            return m, tea.Quit
-        case "enter", " ":
-            newEvent = event{time.Now(), Note, "Blank Note: Need to add text"}
+            newEvent.Type = Quit
+            newEvent.Text = "Manually Quit Program"
+        case "enter", " ", "n":
+            newEvent.Type = Note
         case "b":
-            newEvent = event{time.Now(), BeginBreak, "Begin Break: maybe add context for break"}
+            newEvent.Type = BeginBreak
         case "r":
-            newEvent = event{time.Now(), EndBreak, "End Break: Not sure what text could be used for here?"}
+            newEvent.Type = EndBreak
+        case "c":
+            newEvent.Type = BeginCombat
         }
         m.entries = append(m.entries, newEvent)
-        log_event(newEvent)
+        return m, returnEvent(newEvent)
     }
     return m, nil
 }
 
 func (m Model) View() string {
-    title := "Pathfinder 2e Sessioner v.0.go.1"
+    title := "Pathfinder 2e Sessioner v.0.go.1\n(b)reak, (r)esume, (c)ombat, (n)ote"
     var titleStyle = lipgloss.NewStyle().
     Align(lipgloss.Center).
     BorderStyle(lipgloss.NormalBorder()).BorderBottom(true)
+    padding := " "
     times := ""
+    types := ""
     notes := ""
     for _, entry := range m.entries {
-      times += fmt.Sprintf("%s\n", entry.eventTime.Format("3:4"))
-      notes += fmt.Sprintf("%s\n", entry.eventText)
+      times += fmt.Sprintf("[%s]\n", entry.Time.Format("3:4"))
+      types += fmt.Sprintf("%s\n", entry.Type)
+      notes += fmt.Sprintf("%s\n", entry.Text)
     }
-    return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(title), lipgloss.JoinHorizontal(lipgloss.Top, times, notes))
+    return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(title), lipgloss.JoinHorizontal(lipgloss.Top, times, padding, types, padding, notes))
 }
