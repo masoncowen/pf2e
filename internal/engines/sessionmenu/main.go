@@ -23,10 +23,15 @@ type Model struct {
 }
 
 func InitialModel(pf2eDir string) Model {
-    campainsDir := filepath.Join(pf2eDir, "campaigns")
-    campaigns, errCampaign := os.ReadDir(campainsDir)
+    campaignsDir := filepath.Join(pf2eDir, "campaigns")
+    campaigns, errCampaign := os.ReadDir(campaignsDir)
     if os.IsNotExist(errCampaign) {
-        return Model{}
+        os.MkdirAll(campaignsDir, os.ModePerm)
+        err := os.WriteFile(filepath.Join(campaignsDir, "foo.json"), []byte{}, 0600)
+        if err != nil {
+            panic(err)
+        }
+        campaigns, _ = os.ReadDir(campaignsDir)
     }
     campaignList := []string{}
     for _, currCampaign := range campaigns {
@@ -35,7 +40,7 @@ func InitialModel(pf2eDir string) Model {
     sessionsDir := filepath.Join(pf2eDir, "sessions")
     sessions, errSession := os.ReadDir(sessionsDir)
     if os.IsNotExist(errSession) {
-        return Model{campaigns: campaignList}
+        os.MkdirAll(sessionsDir, os.ModePerm)
     }
     sessionList := []string{}
     for _, currSession := range sessions {

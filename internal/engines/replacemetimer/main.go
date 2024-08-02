@@ -7,21 +7,25 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type eventType int
+type EventType int
 
 const (
-    Quit eventType = iota
+    Unknown EventType = iota
+    Quit
+    ToDoItem
+    Note
     BeginBreak
     EndBreak
-    Note
     BeginCombat
     EndCombat
 )
 
-func (e eventType) String() string {
+func (e EventType) String() string {
     switch e {
     case Quit:
         return "Quit Application"
+    case ToDoItem:
+        return "Added ToDo Item for Application"
     case BeginBreak:
         return "Beginning of Break"
     case EndBreak:
@@ -38,8 +42,9 @@ func (e eventType) String() string {
 
 type Event struct {
   Time time.Time
-  Type eventType
+  Type EventType
   Text string
+  NeedsNote bool
 }
 
 type Model struct {
@@ -64,6 +69,8 @@ func returnEvent(e Event) tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
+    case Event:
+        m.entries = append(m.entries[:len(m.entries)-1], msg)
     case tea.KeyMsg:
         newEvent := Event{Time: time.Now()}
         switch msg.String() {
@@ -72,12 +79,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             newEvent.Text = "Manually Quit Program"
         case "enter", " ", "n":
             newEvent.Type = Note
+            newEvent.NeedsNote = true
         case "b":
             newEvent.Type = BeginBreak
+            newEvent.NeedsNote = true
         case "r":
             newEvent.Type = EndBreak
         case "c":
             newEvent.Type = BeginCombat
+        case "t":
+            newEvent.Type = ToDoItem
+            newEvent.NeedsNote = true
         }
         m.entries = append(m.entries, newEvent)
         return m, returnEvent(newEvent)
@@ -86,7 +98,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-    title := "Pathfinder 2e Sessioner v.0.go.1\n(b)reak, (r)esume, (c)ombat, (n)ote"
+    title := "Pathfinder 2e Sessioner v.0.go.1\n(b)reak, (r)esume, (c)ombat, (n)ote, (t)odo, (q)uit"
     var titleStyle = lipgloss.NewStyle().
     Align(lipgloss.Center).
     BorderStyle(lipgloss.NormalBorder()).BorderBottom(true)
@@ -95,7 +107,7 @@ func (m Model) View() string {
     types := ""
     notes := ""
     for _, entry := range m.entries {
-      times += fmt.Sprintf("[%s]\n", entry.Time.Format("3:4"))
+      times += fmt.Sprintf("[%s]\n", entry.Time.Format("15:04"))
       types += fmt.Sprintf("%s\n", entry.Type)
       notes += fmt.Sprintf("%s\n", entry.Text)
     }

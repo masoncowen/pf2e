@@ -6,17 +6,21 @@ require (
   internal/pathfinder v0.1.0
   internal/pathbuilder v0.1.0
   internal/engines/mainmenu v0.1.0
-  internal/engines/replacemetimer v0.1.0
   internal/engines/options v0.1.0
   internal/engines/sessionmenu v0.1.0
+  internal/engines/replacemetimer v0.1.0
+  internal/engines/replacemeinput v0.1.0
+  internal/engines/combat v0.1.0
 )
 replace (
   internal/pathfinder => ./internal/pathfinder
   internal/pathbuilder => ./internal/pathbuilder
   internal/engines/mainmenu => ./internal/engines/mainmenu
-  internal/engines/replacemetimer => ./internal/engines/replacemetimer
   internal/engines/options => ./internal/engines/options
   internal/engines/sessionmenu => ./internal/engines/sessionmenu
+  internal/engines/replacemetimer => ./internal/engines/replacemetimer
+  internal/engines/replacemeinput => ./internal/engines/replacemeinput
+  internal/engines/combat => ./internal/engines/combat
 )
 
 require (

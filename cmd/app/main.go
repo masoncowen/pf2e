@@ -1,16 +1,18 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "time"
-    "path/filepath"
-    tea "github.com/charmbracelet/bubbletea"
-    "internal/engines/mainmenu"
-    "internal/engines/options"
-    "internal/engines/sessionmenu"
-    "internal/engines/replacemetimer"
-    "internal/engines/combat"
+	"fmt"
+	"internal/engines/combat"
+	"internal/engines/mainmenu"
+	"internal/engines/options"
+	"internal/engines/replacemeinput"
+	"internal/engines/replacemetimer"
+	"internal/engines/sessionmenu"
+	"os"
+	"path/filepath"
+	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type sessionState int
@@ -21,16 +23,19 @@ const (
     sessionMenuView
     sessionMenuViewExistingSession
     timerView
+    inputView
     combatView
 )
 
 type model struct {
     state sessionState
+    pf2eDir string
     logFile string
     mainmenu tea.Model
     options tea.Model
     sessionmenu tea.Model
     timer tea.Model
+    input tea.Model
     combat tea.Model
 }
 
@@ -48,11 +53,13 @@ func initialModel() model {
     logFile := filepath.Join(logDir, logFileName)
 	return model{
         state: mainMenuView,
+        pf2eDir: pf2eDir,
         logFile: logFile,
         mainmenu: mainmenu.InitialModel(pf2eDir),
         options: options.InitialModel(),
         sessionmenu: sessionmenu.InitialModel(pf2eDir),
         timer: replacemetimer.InitialModel(logFile),
+        input: replacemeinput.InitialModel(),
         combat: combat.InitialModel(),
 	}
 }
@@ -65,11 +72,29 @@ func (m model) log_event(e replacemetimer.Event) error {
     eventString := fmt.Sprintf("[%s](%s) %s\n", e.Time.Format("03:04:05"), e.Type, e.Text)
     f, err := os.OpenFile(m.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
     if err != nil {
+        if os.IsNotExist(err) {
+            os.MkdirAll(filepath.Join(m.pf2eDir, "logs"), os.ModePerm)
+            f, err = os.OpenFile(m.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+            if err != nil {
+                return err
+            }
+        }
         return err
     }
     defer f.Close()
     if _, err = f.WriteString(eventString); err != nil {
         return err
+    }
+    if e.Type == replacemetimer.ToDoItem {
+        todoFile := filepath.Join(m.pf2eDir, "todo.log")
+        f2, err2 := os.OpenFile(todoFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+        if err2 != nil {
+            return err2
+        }
+        defer f2.Close()
+        if _, err2 = f2.WriteString(eventString); err2 != nil {
+            return err2
+        }
     }
     return nil
 }
@@ -90,17 +115,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case sessionmenu.ReloadSessinMsg:
         m.state = timerView
     case replacemetimer.Event:
-        m.log_event(msg)
+        if !msg.NeedsNote {
+            m.state = timerView
+            err := m.log_event(msg)
+            if err != nil {
+                panic(err)
+            }
+        }
         switch msg.Type {
         case replacemetimer.Quit:
             return m, tea.Quit
         case replacemetimer.BeginCombat:
             m.state = combatView
+        case replacemetimer.BeginBreak, replacemetimer.Note, replacemetimer.ToDoItem:
+            if msg.NeedsNote {
+                m.state = inputView
+            }
         }
 
     case tea.KeyMsg:
         switch msg.String() {
-        case "q":
+        case "ctrl+c":
             return m, tea.Quit
         }
     }
@@ -148,6 +183,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         }
         m.timer = timerModel
         cmd = newCmd
+    case inputView:
+        newInput, newCmd := m.input.Update(msg)
+        inputModel, ok := newInput.(replacemeinput.Model)
+        if !ok {
+            panic("Could not perform assertion on input model")
+        }
+        m.input = inputModel
+        cmd = newCmd
     case combatView:
         newCombat, newCmd := m.combat.Update(msg)
         combatModel, ok := newCombat.(combat.Model)
@@ -170,6 +213,8 @@ func (m model) View() string {
         return m.sessionmenu.View()
     case timerView:
         return m.timer.View()
+    case inputView:
+        return m.input.View()
     case combatView:
         return m.combat.View()
     }

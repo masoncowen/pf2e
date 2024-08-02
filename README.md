@@ -11,10 +11,10 @@ Uses:
 - Utility Commands
     - [x] PASS (Not really a command, just used to pass commands to engines)
     - [x] HELP (minimal version, just tells you which key to press for which event)
-    - [ ] TODO
+    - [x] TODO
     - [x] QUIT (minimal version, just select Quit on start menu currently)
-    - [ ] ECHO (not certain use-case, used in one-shot session for quick notes)
-    - [x] BREAK (very minimal version, just records a timestamp and simple message.)
+    - [x] ECHO (replaced with a notes command for logging)
+    - [x] BREAK (very minimal version, just records a timestamp and reason for break)
     - [ ] SAVE (wasn't even implemented in Python)
     - [ ] LOAD (wasn't even implemented in Python)
     - [x] BEGIN (technically? Got a message that so far can either quit or send to combat)
