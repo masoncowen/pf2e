@@ -10,14 +10,14 @@ Uses:
 ## Go to-implement from Python version
 - Utility Commands
     - [x] PASS (Not really a command, just used to pass commands to engines)
-    - [ ] HELP
+    - [x] HELP (minimal version, just tells you which key to press for which event)
     - [ ] TODO
     - [x] QUIT (minimal version, just select Quit on start menu currently)
     - [ ] ECHO (not certain use-case, used in one-shot session for quick notes)
-    - [x] BREAK (very minimal version, just records a timestamp and simple message. Not recorded to any log currently)
+    - [x] BREAK (very minimal version, just records a timestamp and simple message.)
     - [ ] SAVE (wasn't even implemented in Python)
     - [ ] LOAD (wasn't even implemented in Python)
-    - [ ] BEGIN
+    - [x] BEGIN (technically? Got a message that so far can either quit or send to combat)
         - [ ] COMBAT (only half-implemented engine in Python)
 - Combat Engine
     - [ ] Initiative tracker
