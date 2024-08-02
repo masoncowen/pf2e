@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
     "path/filepath"
+    "internal/constants"
 	pb "internal/pathbuilder"
-	pf "internal/pathfinder"
 	"os"
 )
 
@@ -15,15 +15,6 @@ func check(e error) {
     }
 }
  
-type encounter struct {}
-type npc struct {}
-
-type basicCampaign struct {
-    Party []pf.Character
-    npcs []npc
-    encounters []encounter
-}
-
 func main() {
     pf2eDir := os.Getenv("PF2E_DIR")
     if pf2eDir == "" {
@@ -43,7 +34,7 @@ func main() {
             panic(err)
         }
     }
-    var c = basicCampaign{}
+    var c = constants.Campaign{}
     for _, file := range builds {
         jsonData, err := os.ReadFile(filepath.Join(buildDir, file.Name()))
         check(err)
@@ -64,8 +55,7 @@ func main() {
         if os.IsNotExist(errWriteFile) {
             os.MkdirAll(campaignsDir, os.ModePerm)
             errWriteFile = os.WriteFile(filepath.Join(campaignsDir, "foo.json"), jsonParty, 0644)
-        }
-        if errWriteFile != nil {
+        } else {
             panic(errWriteFile)
         }
     }

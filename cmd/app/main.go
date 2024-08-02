@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"internal/constants"
 	"internal/engines/combat"
 	"internal/engines/mainmenu"
 	"internal/engines/options"
@@ -31,6 +32,8 @@ type model struct {
     state sessionState
     pf2eDir string
     logFile string
+    campaignFile string
+    sessionFile string
     mainmenu tea.Model
     options tea.Model
     sessionmenu tea.Model
@@ -58,7 +61,7 @@ func initialModel() model {
         mainmenu: mainmenu.InitialModel(pf2eDir),
         options: options.InitialModel(),
         sessionmenu: sessionmenu.InitialModel(pf2eDir),
-        timer: replacemetimer.InitialModel(logFile),
+        timer: replacemetimer.InitialModel(),
         input: replacemeinput.InitialModel(),
         combat: combat.InitialModel(),
 	}
@@ -68,7 +71,7 @@ func (m model) Init() tea.Cmd {
     return nil
 }
 
-func (m model) log_event(e replacemetimer.Event) error {
+func (m model) logEvent(e replacemetimer.Event) error {
     eventString := fmt.Sprintf("[%s](%s) %s\n", e.Time.Format("03:04:05"), e.Type, e.Text)
     f, err := os.OpenFile(m.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
     if err != nil {
@@ -108,16 +111,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.state = sessionMenuViewExistingSession
     case mainmenu.OptionMsg:
         m.state = optionsView
-    case options.BackMsg, sessionmenu.BackMsg:
+    case options.BackMsg, constants.BackMsg:
         m.state = mainMenuView
-    case sessionmenu.NewSessionMsg:
+    case constants.NewSessionMsg:
         m.state = timerView
-    case sessionmenu.ReloadSessinMsg:
+        m.campaignFile = msg.Campaign.Path
+    case constants.ReloadSessionMsg:
         m.state = timerView
     case replacemetimer.Event:
         if !msg.NeedsNote {
             m.state = timerView
-            err := m.log_event(msg)
+            err := m.logEvent(msg)
             if err != nil {
                 panic(err)
             }

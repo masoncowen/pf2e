@@ -5,6 +5,8 @@ go 1.22.4
 require (
   internal/pathfinder v0.1.0
   internal/pathbuilder v0.1.0
+  internal/constants v0.1.0
+  internal/data v0.1.0
   internal/engines/mainmenu v0.1.0
   internal/engines/options v0.1.0
   internal/engines/sessionmenu v0.1.0
@@ -15,6 +17,8 @@ require (
 replace (
   internal/pathfinder => ./internal/pathfinder
   internal/pathbuilder => ./internal/pathbuilder
+  internal/constants => ./internal/constants
+  internal/data => ./internal/data
   internal/engines/mainmenu => ./internal/engines/mainmenu
   internal/engines/options => ./internal/engines/options
   internal/engines/sessionmenu => ./internal/engines/sessionmenu

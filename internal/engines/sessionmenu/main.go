@@ -4,21 +4,15 @@ import (
 	"fmt"
     "os"
     "path/filepath"
+    "internal/constants"
+    "internal/data"
 	tea "github.com/charmbracelet/bubbletea"
 )
-
-type BackMsg struct {}
-type NewSessionMsg struct {
-    CampaignPath string
-}
-type ReloadSessinMsg struct {
-    SessionPath string
-}
 
 type Model struct {
     ExistingSession bool
     sessions []string
-    campaigns []string
+    campaigns []constants.Campaign
     cursor int
 }
 
@@ -27,15 +21,19 @@ func InitialModel(pf2eDir string) Model {
     campaigns, errCampaign := os.ReadDir(campaignsDir)
     if os.IsNotExist(errCampaign) {
         os.MkdirAll(campaignsDir, os.ModePerm)
-        err := os.WriteFile(filepath.Join(campaignsDir, "foo.json"), []byte{}, 0600)
+        err := os.WriteFile(filepath.Join(campaignsDir, "blank_campaign.json"), []byte{}, 0600)
         if err != nil {
             panic(err)
         }
         campaigns, _ = os.ReadDir(campaignsDir)
     }
-    campaignList := []string{}
+    campaignList := []constants.Campaign{}
     for _, currCampaign := range campaigns {
-        campaignList = append(campaignList, currCampaign.Name())
+        tempCampaign, err := data.LoadCampaign(filepath.Join(pf2eDir, "campaigns", currCampaign.Name()))
+        if err != nil {
+            panic(err)
+        }
+        campaignList = append(campaignList, tempCampaign)
     }
     sessionsDir := filepath.Join(pf2eDir, "sessions")
     sessions, errSession := os.ReadDir(sessionsDir)
@@ -58,7 +56,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case tea.KeyMsg:
         switch msg.String() {
         case "ctrl+c", "q", "h", "left":
-            return m, func() tea.Msg { return BackMsg{} }
+            return m, func() tea.Msg { return constants.BackMsg{} }
         case "up", "k":
             if m.cursor > 0 {
                 m.cursor--
@@ -69,9 +67,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             }
         case "enter", " ", "l", "right":
             if m.ExistingSession {
-                return m, func() tea.Msg { return ReloadSessinMsg{m.sessions[m.cursor]}}
+                return m, func() tea.Msg { return constants.ReloadSessionMsg{m.sessions[m.cursor]}}
             }
-            return m, func() tea.Msg { return NewSessionMsg{m.campaigns[m.cursor]}}
+            return m, func() tea.Msg { return constants.NewSessionMsg{Campaign: m.campaigns[m.cursor]}}
         }
     }
     return m, nil
@@ -96,7 +94,7 @@ func (m Model) View() string {
             cursor = ">"
         }
 
-        s += fmt.Sprintf("%s %s\n", cursor, campaign)
+        s += fmt.Sprintf("%s %s\n", cursor, campaign.Name)
     }
     return s
 }

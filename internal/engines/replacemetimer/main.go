@@ -2,7 +2,8 @@ package replacemetimer
 
 import (
 	"fmt"
-    "time"
+	"time"
+    "internal/constants"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -41,25 +42,25 @@ func (e EventType) String() string {
 }
 
 type Event struct {
-  Time time.Time
-  Type EventType
-  Text string
-  NeedsNote bool
+    Campaign constants.Campaign
+    Time time.Time
+    Type EventType
+    Text string
+    NeedsNote bool
 }
 
 type Model struct {
-    logFile string
+    campaign constants.Campaign
     entries []Event
 }
 
-func InitialModel(logFile string) Model {
-    return Model{logFile: logFile}
+func InitialModel() Model {
+    return Model{}
 }
 
 func (m Model) Init() tea.Cmd {
     return nil
 }
-
 
 func returnEvent(e Event) tea.Cmd {
     return func() tea.Msg {
@@ -69,6 +70,8 @@ func returnEvent(e Event) tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
+    case constants.NewSessionMsg:
+        m.campaign = msg.Campaign
     case Event:
         m.entries = append(m.entries[:len(m.entries)-1], msg)
     case tea.KeyMsg:
@@ -87,6 +90,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             newEvent.Type = EndBreak
         case "c":
             newEvent.Type = BeginCombat
+            newEvent.Campaign = m.campaign
         case "t":
             newEvent.Type = ToDoItem
             newEvent.NeedsNote = true
