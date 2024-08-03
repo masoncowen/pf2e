@@ -71,7 +71,7 @@ func (m model) Init() tea.Cmd {
     return nil
 }
 
-func (m model) logEvent(e replacemetimer.Event) error {
+func (m model) logEvent(e constants.Event) error {
     eventString := fmt.Sprintf("[%s](%s) %s\n", e.Time.Format("03:04:05"), e.Type, e.Text)
     f, err := os.OpenFile(m.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
     if err != nil {
@@ -88,7 +88,7 @@ func (m model) logEvent(e replacemetimer.Event) error {
     if _, err = f.WriteString(eventString); err != nil {
         return err
     }
-    if e.Type == replacemetimer.ToDoItem {
+    if e.Type == constants.ToDoItem {
         todoFile := filepath.Join(m.pf2eDir, "todo.log")
         f2, err2 := os.OpenFile(todoFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
         if err2 != nil {
@@ -118,7 +118,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.campaignFile = msg.Campaign.Path
     case constants.ReloadSessionMsg:
         m.state = timerView
-    case replacemetimer.Event:
+    case constants.Event:
         if !msg.NeedsNote {
             m.state = timerView
             err := m.logEvent(msg)
@@ -127,11 +127,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             }
         }
         switch msg.Type {
-        case replacemetimer.Quit:
+        case constants.Quit:
             return m, tea.Quit
-        case replacemetimer.BeginCombat:
+        case constants.BeginCombat:
             m.state = combatView
-        case replacemetimer.BeginBreak, replacemetimer.Note, replacemetimer.ToDoItem:
+        case constants.BeginBreak, constants.Note, constants.ToDoItem:
             if msg.NeedsNote {
                 m.state = inputView
             }

@@ -8,6 +8,7 @@ const (
     Beastkin
     HumanVersatile
     FetchlingLiminal
+    HalflingNomadic
 )
 
 func (h Heritage) String() string {
@@ -22,6 +23,8 @@ func (h Heritage) String() string {
         return "Versatile Human"
     case FetchlingLiminal:
         return "Liminal Fetchling"
+    case HalflingNomadic:
+        return "Nomadic Halfling"
     }
     return "Unknown"
 }

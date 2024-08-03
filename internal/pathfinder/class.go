@@ -8,6 +8,7 @@ const (
     Bard
     Champion
     Cleric
+    Druid
     Fighter
     Gunslinger
     Inventor
@@ -39,6 +40,8 @@ func (c Class) String() string {
         return "Champion"
     case Cleric:
         return "Cleric"
+    case Druid:
+        return "Druid"
     case Fighter:
         return "Fighter"
     case Gunslinger:
@@ -75,4 +78,56 @@ func (c Class) String() string {
         return "Wizard"
     }
     return "Unknown"
+}
+
+func (c Class) BaseHealth() int {
+    switch c {
+    case Alchemist:
+        return 8
+    case Barbarian:
+        return 12
+    case Bard:
+        return 8
+    case Champion:
+        return 10
+    case Cleric:
+        return 8
+    case Druid:
+        return 8
+    case Fighter:
+        return 10
+    case Gunslinger:
+        return 8
+    case Inventor:
+        return 8
+    case Investigator:
+        return 8
+    case Kineticist:
+        return 8
+    case Magus:
+        return 8
+    case Monk:
+        return 10
+    case Oracle:
+        return 8
+    case Psychic:
+        return 6
+    case Ranger:
+        return 10
+    case Rogue:
+        return 8
+    case Sorcerer:
+        return 6
+    case Summoner:
+        return 10
+    case Swashbuckler:
+        return 10
+    case Thaumaturge:
+        return 8
+    case Witch:
+        return 6
+    case Wizard:
+        return 6
+    }
+    return 0
 }

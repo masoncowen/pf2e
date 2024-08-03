@@ -18,11 +18,11 @@ Uses:
     - [ ] SAVE (wasn't even implemented in Python)
     - [ ] LOAD (wasn't even implemented in Python)
     - [x] BEGIN (technically? Got a message that so far can either quit or send to combat)
-        - [ ] COMBAT (only half-implemented engine in Python)
+        - [x] COMBAT (Still plenty to add, but it functions)
 - Combat Engine
-    - [ ] Initiative tracker
-    - [ ] Health management
-    - [ ] Encounter system (it was hard coded in Python)
-    - [ ] Party system (it was hard coded in Python)
+    - [x] Initiative tracker
+    - [x] Health management
+    - [x] Encounter system (it was hard coded in Python)
+    - [x] Party system (it was hard coded in Python)
 ## General todo
 - [x] Load data from pathbuilder json files

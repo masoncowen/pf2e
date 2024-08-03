@@ -194,6 +194,8 @@ func (pbc PathbuilderCharacter) ConvertHeritage() (pf.Heritage, error) {
         return pf.HumanVersatile, nil
     case "Liminal Fetchling":
         return pf.FetchlingLiminal, nil
+    case "Nomadic Halfling":
+        return pf.HalflingNomadic, nil
     }
     return pf.Aiuvarin, errors.New("Unrecognised Heritage")
 }

@@ -4,11 +4,11 @@ import (
     "fmt"
     "time"
 	tea "github.com/charmbracelet/bubbletea"
-    "internal/engines/replacemetimer"
+    "internal/constants"
 )
 
 type Model struct {
-    Type replacemetimer.EventType
+    Type constants.EventType
     Text string
 }
 
@@ -22,7 +22,7 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) returnFinalString() tea.Cmd {
     return func() tea.Msg {
-        return replacemetimer.Event{Type: m.Type,
+        return constants.Event{Type: m.Type,
             Text: m.Text,
             Time: time.Now(),
         }
@@ -31,7 +31,7 @@ func (m Model) returnFinalString() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
-    case replacemetimer.Event:
+    case constants.Event:
         m.Type = msg.Type
         m.Text = ""
     case tea.KeyMsg:

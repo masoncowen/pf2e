@@ -1,0 +1,36 @@
+package pathfinder
+type Proficiencies struct {
+    ClassDC int
+    Perception int
+    Fortitude int
+    Reflex int
+    Will int
+    Heavy int
+    Medium int
+    Light int
+    Unarmored int
+    Advanced int
+    Martial int
+    Simple int
+    Unarmed int
+    CastingArcane int
+    CastingDivine int
+    CastingOccult int
+    CastingPrimal int
+    Acrobatics int
+    Arcana int
+    Athletics int
+    Crafting int
+    Deception int
+    Diplomacy int
+    Intimidation int
+    Medicine int
+    Nature int
+    Occultism int
+    Performance int
+    Religion int
+    Society int
+    Stealth int
+    Survival int
+    Thievery int
+}

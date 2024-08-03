@@ -8,50 +8,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type EventType int
-
-const (
-    Unknown EventType = iota
-    Quit
-    ToDoItem
-    Note
-    BeginBreak
-    EndBreak
-    BeginCombat
-    EndCombat
-)
-
-func (e EventType) String() string {
-    switch e {
-    case Quit:
-        return "Quit Application"
-    case ToDoItem:
-        return "Added ToDo Item for Application"
-    case BeginBreak:
-        return "Beginning of Break"
-    case EndBreak:
-        return "End of Break"
-    case Note:
-        return "Note"
-    case BeginCombat:
-        return "Start of Combat"
-    case EndCombat:
-        return "End of Combat"
-    }
-    return "Unknown Event Type"
-}
-
-type Event struct {
-    Campaign constants.Campaign
-    Time time.Time
-    Type EventType
-    Text string
-    NeedsNote bool
-}
-
 type Model struct {
     campaign constants.Campaign
-    entries []Event
+    entries []constants.Event
 }
 
 func InitialModel() Model {
@@ -62,41 +21,36 @@ func (m Model) Init() tea.Cmd {
     return nil
 }
 
-func returnEvent(e Event) tea.Cmd {
-    return func() tea.Msg {
-        return e
-    }
-}
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case constants.NewSessionMsg:
         m.campaign = msg.Campaign
-    case Event:
+    case constants.Event:
         m.entries = append(m.entries[:len(m.entries)-1], msg)
     case tea.KeyMsg:
-        newEvent := Event{Time: time.Now()}
+        newEvent := constants.Event{Time: time.Now()}
         switch msg.String() {
         case "ctrl+c", "q":
-            newEvent.Type = Quit
+            newEvent.Type = constants.Quit
             newEvent.Text = "Manually Quit Program"
         case "enter", " ", "n":
-            newEvent.Type = Note
+            newEvent.Type = constants.Note
             newEvent.NeedsNote = true
         case "b":
-            newEvent.Type = BeginBreak
+            newEvent.Type = constants.BeginBreak
             newEvent.NeedsNote = true
         case "r":
-            newEvent.Type = EndBreak
+            newEvent.Type = constants.EndBreak
         case "c":
-            newEvent.Type = BeginCombat
+            newEvent.Type = constants.BeginCombat
             newEvent.Campaign = m.campaign
         case "t":
-            newEvent.Type = ToDoItem
+            newEvent.Type = constants.ToDoItem
             newEvent.NeedsNote = true
         }
         m.entries = append(m.entries, newEvent)
-        return m, returnEvent(newEvent)
+        return m, newEvent.ReturnMsg()
     }
     return m, nil
 }
