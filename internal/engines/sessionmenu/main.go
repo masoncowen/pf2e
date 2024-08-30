@@ -62,9 +62,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
                 m.cursor--
             }
         case "down", "j":
-            if m.cursor < len(m.sessions)-1 {
-                m.cursor++
-            }
+			if m.ExistingSession {
+				if m.cursor < len(m.sessions)-1 {
+					m.cursor++
+				}
+			} else {
+				if m.cursor < len(m.campaigns)-1 {
+					m.cursor++
+				}
+			}
         case "enter", " ", "l", "right":
             if m.ExistingSession {
                 return m, func() tea.Msg { return constants.ReloadSessionMsg{m.sessions[m.cursor]}}
